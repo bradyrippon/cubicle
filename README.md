@@ -104,11 +104,3 @@ get_template()
 reset_root()
 reset_template()
 ```
-
-## License
-
-MIT
-
-## Author
-
-Brady Rippon
