@@ -1,13 +1,9 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # cubicle
 
-Create clean, standardized project directories in seconds.
-
-`cubicle` is an R package designed to initialize reproducible project
-structures with a consistent layout, configurable defaults, and minimal
-friction.
+The `cubicle` package is an R package designed to create reproducible
+project structures with a consistent layout and customizable
+congifuration.
 
 ------------------------------------------------------------------------
 
@@ -21,11 +17,15 @@ devtools::install_github("bradyrippon/cubicle")
 
 ## Overview
 
-The `cubicle` package helps you scaffold a new project from a predefined
-template.
+Managing multiple projects at once demands a consistent organizational
+scheme and workflow to maintain consistency across your work. This often
+means creating the same file and folder construction over and over again
+so that all your R scripts and outputs can be found in a predictable
+place, or copy/pasting the same project template repeatedly.
 
-Instead of manually creating folders and files each time you start a
-project, `cubicle` builds the structure for you automatically.
+The `cubicle` package lets you generate a new project from a predefined
+template of files and folders in R and avoid the manual maintenance
+outlined above.
 
 ## Default Project Structure
 
@@ -40,15 +40,14 @@ proj-name/
 ├── data/
 │   └── raw/
 ├── documents/
-├── prints/
-│   └── published/
-├── records/
-│   └── published/
-├── zips/
+│   └── prints/
+│   │   └── published/
+│   └── records/
+│   │   └── published/
+│   └── zips/
 ├── figures/
 ├── reports/
 ├── tags/
-├── .gitignore
 ├── notes.docx
 └── proj.Rproj
 ```
