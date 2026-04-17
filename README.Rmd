@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 
 # cubicle
 
-The `cubicle` package is an R package designed to create reproducible project structures with a consistent layout and customizable congifuration. 
+The `cubicle` R package is designed to create reproducible project structures with a consistent layout and customizable congifuration. 
 
 ---
 
@@ -30,6 +30,21 @@ devtools::install_github("bradyrippon/cubicle")
 Managing multiple projects at once demands a consistent organizational scheme and workflow to maintain consistency across your work. This often means creating the same file and folder construction over and over again so that all your R scripts and outputs can be found in a predictable place, or copy/pasting the same project template repeatedly. 
 
 The `cubicle` package lets you generate a new project from a predefined template of files and folders in R and avoid the manual maintenance outlined above.
+
+## Usage
+
+### Basic example
+
+Projects are generated using the `build_project()` function. The code below creates a folder named **my_project** at the path **C:/Documents/Projects**.
+
+```r
+library(cubicle)
+
+build_project(
+  name = "my_project",
+  path = "C:/Documents/Projects"
+)
+```
 
 ## Default Project Structure
 
@@ -56,8 +71,6 @@ proj-name/
 └── proj.Rproj
 ```
 
-## Usage
-
 ### Basic example
 
 ```r
@@ -65,10 +78,9 @@ library(cubicle)
 
 build_project(
   name = "my_project",
-  path = "projects"
+  path = "C:/Documents/Projects"
 )
 ```
-
 This creates a project at:
 
 ```text
