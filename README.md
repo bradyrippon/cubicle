@@ -3,49 +3,181 @@
 
 # cubicle
 
-<!-- badges: start -->
+Create clean, standardized project directories in seconds.
 
-<!-- badges: end -->
+`cubicle` is an R package designed to initialize reproducible project
+structures with a consistent layout, configurable defaults, and minimal
+friction.
 
-The goal of cubicle is to …
+------------------------------------------------------------------------
 
 ## Installation
 
-You can install the development version of cubicle like so:
+You can install `cubicle` with the following code.
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+devtools::install_github("bradyrippon/cubicle")
 ```
 
-## Example
+## Overview
 
-This is a basic example which shows you how to solve a common problem:
+The `cubicle` package helps you scaffold a new project from a predefined
+template.
+
+Instead of manually creating folders and files each time you start a
+project, `cubicle` builds the structure for you automatically.
+
+## Default Project Structure
+
+A project created with `cubicle` looks like this:
+
+``` text
+proj-name/
+├── code/
+│   ├── admin/
+│   │   ├── functions/
+│   │   └── libs.R
+├── data/
+│   └── raw/
+├── documents/
+├── prints/
+│   └── published/
+├── records/
+│   └── published/
+├── zips/
+├── figures/
+├── reports/
+├── tags/
+├── .gitignore
+├── notes.docx
+└── proj.Rproj
+```
+
+## Usage
+
+### Basic example
 
 ``` r
 library(cubicle)
-## basic example code
+
+build_project(
+  name = "my_project",
+  path = "projects"
+)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+This creates a project at:
+
+``` text
+<root>/projects/my_project/
+```
+
+## Function Arguments
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+build_project(
+  name,
+  path,
+  root = NULL,
+  use_name = FALSE,
+  load_project = FALSE,
+  append = NULL
+)
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+### Arguments
 
-You can also embed plots, for example:
+- `name`  
+  Name of the project folder, used exactly as provided.
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+- `path`  
+  Subdirectory within the root where the project will be created.
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+- `root`  
+  Base directory for projects. If `NULL`, the configured default root is
+  used.
+
+- `use_name`  
+  If `TRUE`, renames the `.Rproj` file to match the project name in
+  snake_case.
+
+- `load_project`  
+  If `TRUE`, opens the new project in RStudio.
+
+- `append`  
+  Optional text to append to project files such as notes.
+
+## Configuration
+
+`cubicle` supports persistent configuration for default paths across
+sessions.
+
+These settings are stored using `rappdirs`.
+
+### Set defaults
+
+``` r
+set_root("C:/Users/you/Documents/Projects")
+set_template("C:/Users/you/Documents/Projects/cubicle-template")
+```
+
+### View current defaults
+
+``` r
+get_root()
+get_template()
+```
+
+## Template Inspection
+
+You can inspect the current template structure with:
+
+``` r
+show_template()
+```
+
+## Example Workflow
+
+``` r
+library(cubicle)
+
+# set defaults once
+set_root("C:/Users/brady/Documents/Projects")
+
+# create a new project
+build_project(
+  name = "vept-analysis",
+  path = "clinical",
+  use_name = TRUE,
+  load_project = TRUE
+)
+```
+
+## Notes
+
+- Empty directories in the template are preserved using placeholder
+  files that are removed after project creation.
+- `.Rproj.user` directories are excluded to avoid permission and copying
+  issues.
+- The package is intended to support repeatable and standardized project
+  setup.
+
+## Why use cubicle?
+
+Standardized project structures make it easier to:
+
+- keep work organized
+- support reproducibility
+- collaborate with others
+- start new analyses quickly
+- reduce setup mistakes
+
+`cubicle` makes that process fast and consistent.
+
+## License
+
+MIT
+
+## Author
+
+Brady Rippon
