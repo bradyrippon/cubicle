@@ -30,9 +30,7 @@ outlined above.
 
 ### Basic example
 
-Projects are generated using the `build_project()` function. The code
-below creates a folder named **my_project** at the path
-**C:/Documents/Projects**.
+Projects are generated using the `build_project()` function.
 
 ``` r
 library(cubicle)
@@ -43,9 +41,19 @@ build_project(
 )
 ```
 
-## Default Project Structure
+The code above creates an R project at:
 
-A project created with `cubicle` looks like this:
+``` text
+C:/Documents/Projects/my_project/
+```
+
+While `cubicle` comes with a recommended default project structure,
+everybody may already have their own personal organizational scheme that
+works for them! You are encouraged to test the default structures
+recommended by `cubicle`, though you can also save your own custom
+project template for repeated use.
+
+### Default project structure
 
 ``` text
 proj-name/
@@ -68,124 +76,34 @@ proj-name/
 └── proj.Rproj
 ```
 
-### Basic example
+### Custom configuration
+
+In addition to setting your own project template, you can also save a
+root parent directory if you expect to generally send your projects to
+the same local parent directory. The functions below will save these
+settings to your R profile and persist from session-to-session.
 
 ``` r
-library(cubicle)
-
-build_project(
-  name = "my_project",
-  path = "C:/Documents/Projects"
-)
+set_root("C:/Documents/Projects")
+set_template("C:/Documents/Projects/my_template")
 ```
 
-This creates a project at:
-
-``` text
-<root>/projects/my_project/
-```
-
-## Function Arguments
+The folder specified in `set_template()` should contain the file/folder
+structure to be copied. You can view the current settings and reset
+these parameters to the package defaults with:
 
 ``` r
-build_project(
-  name,
-  path,
-  root = NULL,
-  use_name = FALSE,
-  load_project = FALSE,
-  append = NULL
-)
-```
+# print template structure in console
+show_template()
 
-### Arguments
-
-- `name`  
-  Name of the project folder, used exactly as provided.
-
-- `path`  
-  Subdirectory within the root where the project will be created.
-
-- `root`  
-  Base directory for projects. If `NULL`, the configured default root is
-  used.
-
-- `use_name`  
-  If `TRUE`, renames the `.Rproj` file to match the project name in
-  snake_case.
-
-- `load_project`  
-  If `TRUE`, opens the new project in RStudio.
-
-- `append`  
-  Optional text to append to project files such as notes.
-
-## Configuration
-
-`cubicle` supports persistent configuration for default paths across
-sessions.
-
-These settings are stored using `rappdirs`.
-
-### Set defaults
-
-``` r
-set_root("C:/Users/you/Documents/Projects")
-set_template("C:/Users/you/Documents/Projects/cubicle-template")
-```
-
-### View current defaults
-
-``` r
+# view saved configuration paths
 get_root()
 get_template()
+
+# reset to default
+reset_root()
+reset_template()
 ```
-
-## Template Inspection
-
-You can inspect the current template structure with:
-
-``` r
-show_template()
-```
-
-## Example Workflow
-
-``` r
-library(cubicle)
-
-# set defaults once
-set_root("C:/Users/brady/Documents/Projects")
-
-# create a new project
-build_project(
-  name = "vept-analysis",
-  path = "clinical",
-  use_name = TRUE,
-  load_project = TRUE
-)
-```
-
-## Notes
-
-- Empty directories in the template are preserved using placeholder
-  files that are removed after project creation.
-- `.Rproj.user` directories are excluded to avoid permission and copying
-  issues.
-- The package is intended to support repeatable and standardized project
-  setup.
-
-## Why use cubicle?
-
-Standardized project structures make it easier to:
-
-- keep work organized
-- support reproducibility
-- collaborate with others
-- start new analyses quickly
-- reduce setup mistakes
-
-`cubicle` makes that process fast and consistent.
 
 ## License
 
