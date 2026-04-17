@@ -1,9 +1,14 @@
 Package: cubicle
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Reproducible Template for R Projects
+Version: 0.0.1
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person(
+    "Brady", "Rippon", "brady.rippon@gmail.com", role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0002-1730-8330")
+    )
+Description: Creates reproducible project structures with a consistent layout 
+and customizable congifuration. Stores a template for your desired project directory
+layout and replicates that project where needed. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
