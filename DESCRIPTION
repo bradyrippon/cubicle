@@ -17,3 +17,5 @@ Imports:
     cli,
     fs,
     rappdirs
+URL: https://github.com/bradyrippon/cubicle
+BugReports: https://github.com/bradyrippon/cubicle/issues
