@@ -1,37 +1,30 @@
 
-
-## helper ----------
-.default_template_path <- function() {
-  system.file("template", package = "cubicle")
-}
-
-
-
 #' Get the active cubicle template path
 #'
 #' @export
 get_template <- function() {
 
-  ## check sessions settings ----------
+  # check sessions settings
   opt <- getOption("cubicle.template")
   if (!is.null(opt) && fs::dir_exists(opt)) {
     return(opt)
   }
 
-  ## check permanent settings ----------
+  # check permanent settings
   config <- .read_config()
   if (!is.null(config$template) && fs::dir_exists(config$template)) {
     return(config$template)
   }
 
-  ## find default settings ----------
+  # find default settings
   if (!nzchar(.default_template_path())) {
-    stop("Default package template could not be found.", call. = FALSE)
+    cli::cli_abort("Default package template could not be found.")
   }
 
   .default_template_path()
 
-} # --- get_template
+} # --- get_template()
+
 
 
 #' Show the current cubicle template structure
@@ -47,7 +40,8 @@ show_template <- function() {
   )
   invisible(NULL)
 
-} # --- show_template
+} # --- show_template()
+
 
 
 #' Set a custom cubicle template
@@ -58,24 +52,25 @@ show_template <- function() {
 set_template <- function(path, save = TRUE) {
 
   if (!fs::dir_exists(path)) {
-    stop("Template directory does not exist: ", path, call. = FALSE)
+    cli::cli_abort("Template directory does not exist: {.path {path}}")
   }
 
-  ## find where new template exists ----------
+  # find where new template exists
   path <- fs::path_norm(path)
 
-  ## save permanent setting (if necessary) ----------
+  # save permanent setting (if necessary)
   if (isTRUE(save)) {
     config <- .read_config()
     config$template <- path
     .write_config(config)
   }
 
-  ## save session setting ----------
+  # save session setting
   options(cubicle.template = path)
   invisible(path)
 
-} # --- set_template
+} # --- set_template()
+
 
 
 #' Reset to the default cubicle template
@@ -93,4 +88,17 @@ reset_template <- function(save = TRUE) {
   options(cubicle.template = NULL)
   invisible(NULL)
 
-} # --- reset_template
+} # --- reset_template()
+
+
+
+
+
+# Utilities --------------------------------------------------
+
+# -- find path to default template --
+.default_template_path <- function() {
+
+  system.file("template", package = "cubicle")
+
+} # --- .default_template_path()

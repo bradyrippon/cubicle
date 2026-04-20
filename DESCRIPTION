@@ -1,6 +1,6 @@
 Package: cubicle
 Title: Reproducible Template for R Projects
-Version: 0.0.1
+Version: 0.1.0
 Authors@R: 
     person(
     "Brady", "Rippon", , "brady.rippon@gmail.com", role = c("aut", "cre"),

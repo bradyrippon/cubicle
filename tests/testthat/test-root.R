@@ -1,205 +1,154 @@
 
-test_that(
-  "get_root: session root returned when available",
-  {
-    withr::local_options(
-      list(cubicle.root = "C:/session/root")
-    )
+test_that("get_root returns session root when available", {
+  withr::local_options(list(cubicle.root = "C:/session/root"))
 
-    out <- with_mocked_bindings(
-      get_root(),
-      .read_config = function() {
-        list(root = "C:/saved/root", template = NULL)
-      }
-    )
+  out <- with_mocked_bindings(
+    get_root(),
+    .read_config = function() {
+      list(
+        root = "C:/saved/root",
+        template = NULL,
+        projects = list()
+      )
+    }
+  )
 
-    expect_equal(out, "C:/session/root")
-  }
-)
+  expect_equal(out, "C:/session/root")
+})
 
+test_that("get_root falls back to config root when session root missing", {
+  withr::local_options(list(cubicle.root = NULL))
 
+  out <- with_mocked_bindings(
+    get_root(),
+    .read_config = function() {
+      list(
+        root = "C:/saved/root",
+        template = NULL,
+        projects = list()
+      )
+    }
+  )
 
-test_that(
-  "get_root: saved root returns when session root missing",
-  {
-    withr::local_options(
-      list(cubicle.root = NULL)
-    )
+  expect_equal(out, "C:/saved/root")
+})
 
-    out <- with_mocked_bindings(
-      get_root(),
+test_that("get_root returns NULL when no root exists", {
+  withr::local_options(list(cubicle.root = NULL))
+
+  out <- with_mocked_bindings(
+    get_root(),
+    .read_config = function() {
+      list(
+        root = NULL,
+        template = NULL,
+        projects = list()
+      )
+    }
+  )
+
+  expect_null(out)
+})
+
+test_that("set_root errors when directory does not exist", {
+  expect_error(
+    set_root("C:/does/not/exist"),
+    "Directory does not exist"
+  )
+})
+
+test_that("set_root updates session option and config when save = TRUE", {
+  tmp <- withr::local_tempdir()
+  check <- NULL
+
+  withr::local_options(list(cubicle.root = NULL))
+
+  expect_invisible(
+    with_mocked_bindings(
+      set_root(tmp, save = TRUE),
       .read_config = function() {
         list(
-          root     = "C:/saved/root",
-          template = NULL
+          root = NULL,
+          template = "C:/saved/template",
+          projects = list(list(name = "proj-a", path = "a"))
         )
+      },
+      .write_config = function(config) {
+        check <<- config
+        invisible(config)
       }
     )
+  )
 
-    expect_equal(out, "C:/saved/root")
-  }
-)
+  expect_equal(getOption("cubicle.root"), fs::path_norm(tmp))
+  expect_equal(check$root, fs::path_norm(tmp))
+  expect_equal(check$template, "C:/saved/template")
+  expect_equal(check$projects, list(list(name = "proj-a", path = "a")))
+})
 
+test_that("set_root updates session option only when save = FALSE", {
+  tmp <- withr::local_tempdir()
+  wrote <- FALSE
 
+  withr::local_options(list(cubicle.root = NULL))
 
-test_that(
-  "get_root: NULL returned when root exists",
-  {
-    withr::local_options(
-      list(cubicle.root = NULL)
+  expect_invisible(
+    with_mocked_bindings(
+      set_root(tmp, save = FALSE),
+      .write_config = function(config) {
+        wrote <<- TRUE
+        invisible(config)
+      }
     )
+  )
 
-    out <- with_mocked_bindings(
-      get_root(),
+  expect_equal(getOption("cubicle.root"), fs::path_norm(tmp))
+  expect_false(wrote)
+})
+
+test_that("reset_root clears session option and config when save = TRUE", {
+  check <- NULL
+
+  withr::local_options(list(cubicle.root = "C:/session/root"))
+
+  expect_invisible(
+    with_mocked_bindings(
+      reset_root(save = TRUE),
       .read_config = function() {
         list(
-          root     = NULL,
-          template = NULL
+          root = "C:/saved/root",
+          template = "C:/saved/template",
+          projects = list(list(name = "proj-a", path = "a"))
         )
+      },
+      .write_config = function(config) {
+        check <<- config
+        invisible(config)
       }
     )
+  )
 
-    expect_null(out)
-  }
-)
+  expect_null(getOption("cubicle.root"))
+  expect_null(check$root)
+  expect_equal(check$template, "C:/saved/template")
+  expect_equal(check$projects, list(list(name = "proj-a", path = "a")))
+})
 
+test_that("reset_root clears session option only when save = FALSE", {
+  wrote <- FALSE
 
+  withr::local_options(list(cubicle.root = "C:/session/root"))
 
-test_that(
-  "set_root: error; directory does not exist",
-  {
-    expect_error(
-      set_root("C:/does/not/exist"),
-      "Directory does not exist"
+  expect_invisible(
+    with_mocked_bindings(
+      reset_root(save = FALSE),
+      .write_config = function(config) {
+        wrote <<- TRUE
+        invisible(config)
+      }
     )
-  }
-)
+  )
 
-
-
-test_that(
-  "set_root: session root set/configuration written when [save] is TRUE",
-  {
-    tmp   <- withr::local_tempdir()
-    check <- NULL
-
-    withr::local_options(
-      list(cubicle.root = NULL)
-    )
-
-    expect_invisible(
-      with_mocked_bindings(
-        set_root(tmp, save = TRUE),
-        .read_config = function() {
-          list(
-            root     = NULL,
-            template = "C:/saved/template"
-          )
-        },
-        .write_config = function(config) {
-          check <<- config
-          invisible(config)
-        }
-      )
-    )
-
-    expect_equal(getOption("cubicle.root"), fs::path_norm(tmp))
-    expect_equal(check$root,      fs::path_norm(tmp))
-    expect_equal(check$template, "C:/saved/template")
-  }
-)
-
-
-
-test_that(
-  "set_root: session root set/configuration not written when [save] is FALSE",
-  {
-    tmp   <- withr::local_tempdir()
-    check <- FALSE
-
-    withr::local_options(
-      list(cubicle.root = NULL)
-    )
-
-    expect_invisible(
-      with_mocked_bindings(
-        set_root(tmp, save = FALSE),
-        .read_config = function() {
-          list(
-            root     = NULL,
-            template = NULL
-          )
-        },
-        .write_config = function(config) {
-          check <<- TRUE
-          invisible(config)
-        }
-      )
-    )
-
-    expect_equal(getOption("cubicle.root"), fs::path_norm(tmp))
-    expect_false(check)
-  }
-)
-
-
-
-test_that(
-  "reset_root: session root/configuration deleted when [save] is TRUE",
-  {
-    check <- NULL
-    withr::local_options(
-      list(cubicle.root = "C:/session/root")
-    )
-
-    expect_invisible(
-      with_mocked_bindings(
-        reset_root(save = TRUE),
-        .read_config = function() {
-          list(
-            root     = "C:/saved/root",
-            template = "C:/saved/template"
-          )
-        },
-        .write_config = function(config) {
-          check <<- config
-          invisible(config)
-        }
-      )
-    )
-
-    expect_null(getOption("cubicle.root"))
-    expect_null(check$root)
-    expect_equal(check$template, "C:/saved/template")
-  }
-)
-
-
-test_that(
-  "reset_root: session root deleted only when [save] is FALSE",
-  {
-    check <- FALSE
-    withr::local_options(
-      list(cubicle.root = "C:/session/root")
-    )
-
-    expect_invisible(
-      with_mocked_bindings(
-        reset_root(save = FALSE),
-        .read_config = function() {
-          list(
-            root     = "C:/saved/root",
-            template = NULL
-          )
-        },
-        .write_config = function(config) {
-          check <<- TRUE
-          invisible(config)
-        }
-      )
-    )
-
-    expect_null(getOption("cubicle.root"))
-    expect_false(check)
-  }
-)
+  expect_null(getOption("cubicle.root"))
+  expect_false(wrote)
+})
